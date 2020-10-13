@@ -232,7 +232,7 @@
                                 </li>
                                 <li class="app-sidebar__heading">Paket</li>
                                 <li>
-                                    <a href="<?=base_url('admin/pakettour');?>" class="<?= $url == 'paket_tour' ? 'mm-active' : NULL;?>">
+                                    <a href="<?=base_url('admin/paket_tour');?>" class="<?= $url == 'paket_tour' ? 'mm-active' : NULL;?>">
                                         <i class="metismenu-icon pe-7s-plane"></i>
                                         Paket Wisata
                                     </a>
@@ -346,6 +346,9 @@ $(document).ready(function(){
     $('#destinasi').ready(function(){
         tampilData();
     });
+    $('#list_paket_tour').ready(function(){
+        tampilDataPaket();
+    });
     $('#durasi').ready(function(){
         tampilDataDurasi();
     });
@@ -365,6 +368,35 @@ $(document).ready(function(){
         $("#paket_save").attr("disabled", "disabled");
         save_paket_tour();
     });
+    function tampilDataPaket(){
+        $.ajax({
+            type : 'POST',
+            url   : '<?php echo site_url('admin/paket_tour/showDataTour')?>',
+            async : true,
+            dataType : 'json',
+            success : function(data){
+                var html = '';
+                var i;
+                var no=0;
+                for(i=0; i<data.length; i++){
+                    no++;
+                    html += '<div class="card mb-3" style="max-width: 540px;"><div class="row no-gutters">'+
+                            '<div class="col-md-4">'+'<img src="'+data[i].tour_image+'" class="card-img">'+'</div>'+
+                            '<div class="col-md-8"><div class="card-body">'+
+                            '<h5 class="card-title">'+data[i].tour_judul+'</h5>'+
+                            // '<p class="card-text">Destinasi: '+data[i].tour_destinasi+'</p>'+
+                            // '<p class="card-text">Kategori: '+data[i].tour_kategori+'</p>'+
+                            // '<p class="card-text"><small class="text-muted">'+data[i].tour_durasi+'</small></p>'+
+                            '<button type="button" class="btn btn-success">Edit</button> '+
+                            '<button type="button" class="btn btn-danger remove" data-type="paket_tour" data-id="'+data[i].tour_id+'">Hapus</button>'+
+                            '</div></div>'+
+                            '</div></div>';
+                }
+                $('#list_paket_tour').html(html);
+            }
+
+        });
+    }
     function tampilData(){
         $.ajax({
             type : 'POST',
@@ -510,25 +542,36 @@ $(document).ready(function(){
     }
     function save_paket_tour(){
         var judul = $('#judul_paket').val();
-        var destinasi = $('#destinasi_paket').val();
-        var durasi = $('#durasi_paket').val();
-        var kategori = $('#kategori_paket').val();
+        var destinasi = $('#destinasi-list').val();
+        var durasi = $('#durasi-list').val();
+        var kategori = $('#kategori-list').val();
         var jadwal = $('#jadwal_paket').val();
         var fasilitas = $('#fasilitas_paket').val();
         var gambar = $('#gambar_paket').val();
         $.ajax({
-            url: '<?php echo base_url('pakettour/saveData');?>',
+            url: '<?php echo base_url('admin/paket_tour/saveDataPaket');?>',
             type: 'POST',
-            dataType : "JSON",
             data: {
                 tour_judul: judul, tour_destinasi: destinasi, tour_durasi: durasi,tour_kategori: kategori,tour_jadwal: jadwal,tour_fasilitas: fasilitas,tour_image: gambar
             },
             success: function(data){
                     $("#paket_save").removeAttr("disabled");
-                    $('#form-destinasi').find('input:text').val('');
-                    console.log('bbbb');
+                    $('#paket_tour_form').find('input:text').val('');
+                    tampilDataPaket();
+                    console.log('makan');
             }
-
+        });
+        return false;
+    }
+    // DELETE DESTINASI FUNCTION
+    function delete_paket(id){
+        $.ajax({
+            type : "POST",
+            url  : "<?php echo site_url('admin/paket_tour/delete')?>",
+            dataType : "JSON",
+            data : {id:id},
+            success: function(data){
+            }
         });
         return false;
     }
@@ -670,6 +713,9 @@ $(document).ready(function(){
             }else if(type == 'kategori'){
                 delete_kategori(id);
                 tampilDataKategori();
+            }else if(type == 'paket_tour'){
+                delete_paket(id);
+                tampilDataPaket();
             }
           }
         })

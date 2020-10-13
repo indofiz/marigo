@@ -6,9 +6,12 @@ use App\Models\destinasiModel;
 use App\Models\durasiModel;
 use App\Models\kategoriModel;
 
-class PaketTour extends BaseController
+class Paket_tour extends BaseController
 {
 	protected $paketTourModel;
+	protected $destinasiModel;
+	protected $durasiModel;
+	protected $kategoriModel;
 	public function __construct(){
 		$this->paketTourModel = new PaketTourModel();
 		$this->destinasiModel = new DestinasiModel();
@@ -30,17 +33,17 @@ class PaketTour extends BaseController
 		return view('admin/paket_tour',$data);
 	}
 
-	public function showData(){
+	public function showDataTour(){
 
 		$data = $this->paketTourModel->orderBy('tour_id','DESC')->findAll(); // Menampung value return dari fungsi getData ke variabel data
         echo json_encode($data); // Mengencode variabel data menjadi json format
 	}
 
-	public function saveData(){
+	public function saveDataPaket(){
 		$data = [
 			'tour_judul' => $this->request->getPost('tour_judul'),
-			'tour_url' => $url,
-			'tour_image' => $this->request->getPost('tour_image'),
+			'tour_url' => 'aarr',
+			'tour_image' => 'aarrrr',
 			'tour_destinasi' => $this->request->getPost('tour_destinasi'),
 			'tour_durasi' => $this->request->getPost('tour_durasi'),
 			'tour_kategori' => $this->request->getPost('tour_kategori'),

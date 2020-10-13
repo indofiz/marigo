@@ -1,6 +1,6 @@
 <?=$this->extend('admin/layout/template');?>
 <?=$this->section('content');?>
-<div class="row" id="durasi-content">
+<div class="row" id="paket-content">
 	<div class="col-md-6">
 		<div class="main-card mb-3 card">
 		    <div class="card-body">
@@ -9,7 +9,7 @@
 	                <form class="" id="paket_tour_form" method="post" enctype="multipart/form-data">
 	                    <div class="position-relative form-group">
 	                    	<label for="exampleEmail" class="">Nama Tour:</label>
-	                    	<input name="judul" id="judul_paket" placeholder="Masukan nama tour" type="text" class="form-control">
+	                    	<input name="judul" id="judul_paket" placeholder="Masukan nama tour" type="text" class="form-control" value="">
 	                    </div>
 	                    <div class="position-relative form-group">
 	                    	<label for="destinasi-list" class="">Destinasi:</label>

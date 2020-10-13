@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 12 Okt 2020 pada 07.58
+-- Waktu pembuatan: 13 Okt 2020 pada 14.00
 -- Versi server: 10.4.13-MariaDB
 -- Versi PHP: 7.4.8
 
@@ -134,6 +134,16 @@ CREATE TABLE `paket_tour` (
   `tour_fasilitas` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data untuk tabel `paket_tour`
+--
+
+INSERT INTO `paket_tour` (`tour_id`, `tour_judul`, `tour_url`, `tour_image`, `tour_destinasi`, `tour_durasi`, `tour_kategori`, `tour_jadwal`, `tour_fasilitas`) VALUES
+(30, 'Aku', 'aarr', 'aarrrr', 34, 3, 3, '', ''),
+(31, 'Cinta', 'aarr', 'aarrrr', 34, 3, 3, '', ''),
+(32, 'Kamu', 'aarr', 'aarrrr', 34, 3, 3, '', ''),
+(33, 'Titik', 'aarr', 'aarrrr', 34, 3, 3, '', '');
+
 -- --------------------------------------------------------
 
 --
@@ -189,9 +199,8 @@ ALTER TABLE `kategori`
 --
 ALTER TABLE `paket_tour`
   ADD PRIMARY KEY (`tour_id`),
-  ADD UNIQUE KEY `tour_destinasi` (`tour_destinasi`,`tour_durasi`),
+  ADD KEY `tour_destinasi` (`tour_destinasi`),
   ADD KEY `tour_durasi` (`tour_durasi`),
-  ADD KEY `tour_destinasi_2` (`tour_destinasi`,`tour_durasi`),
   ADD KEY `tour_kategori` (`tour_kategori`);
 
 --
@@ -238,7 +247,7 @@ ALTER TABLE `kategori`
 -- AUTO_INCREMENT untuk tabel `paket_tour`
 --
 ALTER TABLE `paket_tour`
-  MODIFY `tour_id` int(100) NOT NULL AUTO_INCREMENT;
+  MODIFY `tour_id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- AUTO_INCREMENT untuk tabel `produk`

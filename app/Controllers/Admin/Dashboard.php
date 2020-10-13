@@ -7,8 +7,10 @@ class Dashboard extends BaseController
 	public function index()
 	{
 		$data = [
-			'title' => 'Dashboard - Marigo',
-			'url' => 'dashboard'
+			'title' => 'Dashboard',
+			'url' => 'dashboard',
+			'sub_head' => 'Informasi dashboard marigo',
+			'icon' => 'rocket',
 		];
 		return view('admin/dashboard',$data);
 	}
