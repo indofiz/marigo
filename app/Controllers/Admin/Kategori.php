@@ -28,11 +28,28 @@ class Kategori extends BaseController
 	}
 
 	public function saveData(){
-		$data = [
-			'kategori' => $this->request->getPost('kategori')
-		];
+		if(!$this->validate([
+			'kategori' => [
+				'rules' => 'required|is_unique[kategori.kategori]',
+				'errors' => [
+					'required' => '{field} harus diisi.',
+					'is_unique' => '{field} sudah ada.',
+				]
+			]
+		])){
+			$validation = \Config\Services::validation();
+			if ($validation->getErrors())
+			{
+				echo json_encode(['error' => $validation->getErrors()]);
+			}
+		}else{
+			$data = [
+				'kategori' => $this->request->getPost('kategori')
+			];
+			$this->kategoriModel->save($data);
+				echo json_encode(['success' => 'Success Save Data']);
+		}
 
-		$this->kategoriModel->save($data);
 	}
 
 	public function edit(){

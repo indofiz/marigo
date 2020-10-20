@@ -28,11 +28,28 @@ class Durasi extends BaseController
 	}
 
 	public function saveData(){
-		$data = [
-			'durasi' => $this->request->getPost('durasi')
-		];
+		if(!$this->validate([
+			'durasi' => [
+				'rules' => 'required|is_unique[durasi.durasi]',
+				'errors' => [
+					'required' => '{field} harus diisi.',
+					'is_unique' => '{field} sudah ada.',
+				]
+			]
+		])){
+			$validation = \Config\Services::validation();
+			if ($validation->getErrors())
+			{
+				echo json_encode(['error' => $validation->getErrors()]);
+			}
+		}else{
+			$data = [
+				'durasi' => $this->request->getPost('durasi')
+			];
 
-		$this->durasiModel->save($data);
+			$this->durasiModel->save($data);
+				echo json_encode(['success' => 'Success Save Data']);
+		}
 	}
 
 	public function edit(){

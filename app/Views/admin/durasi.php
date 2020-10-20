@@ -9,7 +9,11 @@
 		        	<?=csrf_field();?>
 		            <div class="form-row">
 		                <div class="col-md-8">
-		                    <div class="position-relative form-group"><input name="durasi" placeholder="Masukan Durasi Paket" type="text" class="form-control" style="background: #eee" id="durasi_val"></div>
+		                    <div class="position-relative form-group">
+		                    	<input name="durasi" placeholder="Masukan Durasi Paket" type="text" class="form-control" style="background: #eee" id="durasi_val">
+		                    	<div class="invalid-tooltip" id="durasi_feedback">
+			                    </div>
+		                    </div>
 		                </div>
 		                <div class="col-md-4">
 		                    <div class="position-relative form-group"><button type="button" class="btn btn-primary btn-lg" id="durasi_save"><i class="fa fa-plus"></i> Tambah</button></div>

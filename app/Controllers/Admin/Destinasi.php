@@ -28,11 +28,41 @@ class Destinasi extends BaseController
 	}
 
 	public function saveData(){
-		$data = [
-			'destinasi' => $this->request->getPost('destinasi')
-		];
+		if(!$this->validate([
+			'destinasi' => [
+				'rules' => 'required|is_unique[destinasi.destinasi]',
+				'errors' => [
+					'required' => '{field} harus diisi.',
+					'is_unique' => '{field} sudah ada.',
+				]
+			],
+			'image_destinasi' => [
+				'rules' => 'uploaded[image_destinasi]|max_size[image_destinasi,3072]|mime_in[image_destinasi,image/jpg,image/jpeg,image/png]|is_image[image_destinasi]',
+				'errors' => [
+					'uploaded' => 'Gambar harus dipilih.',
+					'max_size' => 'Maksimal ukuran gambar adalah 3MB.',
+					'mime_in' => 'Format gambar harus JPEG,JPG,PNG.',
+					'is_image' => 'File harus bentuk gambar.',
+				]
+			]
+		]))
+		{
+			$validation = \Config\Services::validation();
+			if ($validation->getErrors())
+			{
+				echo json_encode(['error' => $validation->getErrors()]);
+			}
+		}else{
+			$image = $this->request->getFile('image_destinasi');
+	        $image->move(ROOTPATH . 'public/image_destinasi');
+			$data = [
+				'destinasi' => $this->request->getPost('destinasi'),
+				'image_destinasi' => $image->getName()
+			];
 
-		$this->destinasiModel->save($data);
+			$this->destinasiModel->save($data);
+				echo json_encode(['success' => 'Success Save Data']);
+		}
 	}
 
 	public function edit(){

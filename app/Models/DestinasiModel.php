@@ -7,6 +7,6 @@ class DestinasiModel extends Model
 
 	protected $table  = 'destinasi';
 	protected $primaryKey = 'destinasi_id';
-	protected $allowedFields = ['destinasi']; 
+	protected $allowedFields = ['destinasi','image_destinasi']; 
 
 }

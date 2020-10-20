@@ -11,7 +11,9 @@
     <meta name="description" content="This is an example dashboard created using build-in elements and components.">
     <meta name="msapplication-tap-highlight" content="no">
 
-<link href="<?=base_url('main.css');?>" rel="stylesheet"></head>
+<link href="<?=base_url('main.css');?>" rel="stylesheet">
+<link href="<?=base_url('styled.css');?>" rel="stylesheet">
+</head>
 <body>
     <div class="app-container app-theme-white body-tabs-shadow fixed-sidebar fixed-header">
         <div class="app-header header-shadow">
@@ -340,6 +342,7 @@
 <script type="text/javascript" src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="<?=base_url('assets/scripts/main.js');?>"></script>
 <script type="text/javascript" src="<?=base_url('assets/sweetalert/sweetalert2.all.min.js');?>"></script>
+<script src="https://cdn.ckeditor.com/ckeditor5/23.0.0/classic/ckeditor.js"></script>
 <script type="text/javascript">
 
 $(document).ready(function(){
@@ -355,19 +358,16 @@ $(document).ready(function(){
     $('#kategori').ready(function(){
         tampilDataKategori();
     });
-    $('#destinasi_save').on('click',function(){
+/*    $('#destinasi_save').on('click',function(){
         save_destinasi();
-    });
+    });*/
     $('#durasi_save').on('click',function(){
         save_durasi();
     });
     $('#kategori_save').on('click',function(){
         save_kategori();
     });
-    $('#paket_save').on('click',function(){
-        $("#paket_save").attr("disabled", "disabled");
-        save_paket_tour();
-    });
+    
     function tampilDataPaket(){
         $.ajax({
             type : 'POST',
@@ -381,7 +381,7 @@ $(document).ready(function(){
                 for(i=0; i<data.length; i++){
                     no++;
                     html += '<div class="card mb-3" style="max-width: 540px;"><div class="row no-gutters">'+
-                            '<div class="col-md-4">'+'<img src="'+data[i].tour_image+'" class="card-img">'+'</div>'+
+                            '<div class="col-md-4">'+'<img src="<?=base_url('image_tour');?>/'+data[i].tour_image+'" class="card-img">'+'</div>'+
                             '<div class="col-md-8"><div class="card-body">'+
                             '<h5 class="card-title">'+data[i].tour_judul+'</h5>'+
                             // '<p class="card-text">Destinasi: '+data[i].tour_destinasi+'</p>'+
@@ -484,24 +484,45 @@ $(document).ready(function(){
         });
     }
     // SAVE DESTINASI FUNCTION
-    function save_destinasi(){
-        var destinasi = $('#destinasi_val').val();
-        $("#destiansi_save").attr("disabled", "disabled");
+    
+    $('#form-destinasi').on('submit',function(e){
+        e.preventDefault();
+        $("#destinasi_save").attr("disabled", "disabled");
+        $("#destinasi_val").removeClass("is-invalid");
+        $("#image_destinasi").removeClass("is-invalid");
+        var data = new FormData(this);
         $.ajax({
-            url: '<?php echo base_url('admin/destinasi/saveData');?>',
-            type: 'POST',
-            data: {
-                destinasi: destinasi
-            },
+            type: "POST",
+            enctype: 'multipart/form-data',
+            url: $(this).attr('action'),
+            processData: false,
+            contentType: false,
+            data: data,
+            dataType: 'json',
             success: function(data){
+                console.log('berhasil');
+                tampilData();
+                if ($.isEmptyObject(data.error)) {
                     $("#destinasi_save").removeAttr("disabled");
                     $('#form-destinasi').find('input:text').val('');
-                    tampilData();
-            }
-
+                }else{
+                    $("#destinasi_save").removeAttr("disabled");
+                    if (data.error.destinasi) {
+                        $("#destinasi_val").addClass("is-invalid");
+                        $("#destinasi_feedback").html(data.error.destinasi);
+                    }else{$("#destinasi_val").addClass("is-valid");}
+                    if (data.error.image_destinasi) {
+                        $("#image_destinasi").addClass("is-invalid");
+                        $("#image_destinasi_feedback").html(data.error.image_destinasi);
+                    }else{$("#image_destinasi").addClass("is-valid");}
+                }
+            },
+             error: function(jqXHR, textStatus, errorThrown) {
+                console.log(textStatus + errorThrown);
+             }
         });
         return false;
-    }
+    });
     // SAVE Durasi FUNCTION
     function save_durasi(){
         var durasi = $('#durasi_val').val();
@@ -509,13 +530,21 @@ $(document).ready(function(){
         $.ajax({
             url: '<?php echo base_url('admin/durasi/saveData');?>',
             type: 'POST',
+            dataType : 'json',
             data: {
                 durasi: durasi
             },
             success: function(data){
-                    $("#durasi_save").removeAttr("disabled");
+                tampilDataDurasi();
+                $("#durasi_save").removeAttr("disabled");
+                if ($.isEmptyObject(data.error)) {
                     $('#form-durasi').find('input:text').val('');
-                    tampilDataDurasi();
+                    $("#durasi_val").removeClass("is-invalid");
+                }else{
+                    $("#durasi_val").addClass("is-invalid");
+                    $("#durasi_feedback").html(data.error.durasi);
+                    console.log(data.error.durasi);
+                }
             }
 
         });
@@ -528,46 +557,92 @@ $(document).ready(function(){
         $.ajax({
             url: '<?php echo base_url('admin/kategori/saveData');?>',
             type: 'POST',
+            dataType: 'json',
             data: {
                 kategori: kategori
             },
             success: function(data){
-                    $("#kategori_save").removeAttr("disabled");
+                tampilDataKategori();
+                $("#kategori_save").removeAttr("disabled");
+                if ($.isEmptyObject(data.error)) {
                     $('#form-kategori').find('input:text').val('');
-                    tampilDataKategori();
+                    $("#kategori_val").removeClass("is-invalid");
+                }else{
+                    $("#kategori_val").addClass("is-invalid");
+                    $("#kategori_feedback").html(data.error.kategori);
+                    console.log(data.error.kategori);
+                }
             }
 
         });
         return false;
     }
-    function save_paket_tour(){
-        var judul = $('#judul_paket').val();
-        var destinasi = $('#destinasi-list').val();
-        var durasi = $('#durasi-list').val();
-        var kategori = $('#kategori-list').val();
-        var jadwal = $('#jadwal_paket').val();
-        var fasilitas = $('#fasilitas_paket').val();
-        var gambar = $('#gambar_paket').val();
+
+    $('#paket_tour_form').on('submit',function(e){
+        e.preventDefault();
+        $("#paket_save").attr("disabled", "disabled");
+        $('#paket_tour_form').find('input').removeClass('is-invalid');
+        $('#paket_tour_form').find('select').removeClass('is-invalid');
+        $('#paket_tour_form').find('textarea').removeClass('is-invalid');
+        $('#paket_tour_form').find('input').removeClass('is-valid');
+        $('#paket_tour_form').find('select').removeClass('is-valid');
+        $('#paket_tour_form').find('textarea').removeClass('is-valid');
+        var data = new FormData(this);
         $.ajax({
-            url: '<?php echo base_url('admin/paket_tour/saveDataPaket');?>',
-            type: 'POST',
-            data: {
-                tour_judul: judul, tour_destinasi: destinasi, tour_durasi: durasi,tour_kategori: kategori,tour_jadwal: jadwal,tour_fasilitas: fasilitas,tour_image: gambar
-            },
+            type: "POST",
+            enctype: 'multipart/form-data',
+            url: $(this).attr('action'),
+            processData: false,
+            contentType: false,
+            data: data,
+            dataType: 'json',
             success: function(data){
+                $("#paket_save").removeAttr("disabled");
+                tampilDataPaket();
+                if ($.isEmptyObject(data.error)) {
                     $("#paket_save").removeAttr("disabled");
                     $('#paket_tour_form').find('input:text').val('');
-                    tampilDataPaket();
-                    console.log('makan');
-            }
+                }else{
+                    $.each(data.error, function(i, log) {
+                        var ele = $('#'+i);
+                      ele.addClass(i.length > 0 ? 'is-invalid' : 'is-valid');
+                      $('#error_'+i).html(log);
+                      (ele != 'tour_judul') ? $('#tour_judul').addClass('is-valid') : null;
+                      (ele != 'tour_destinasi') ? $('#tour_destinasi').addClass('is-valid') : null;
+                      (ele != 'tour_durasi') ? $('#tour_durasi').addClass('is-valid') : null;
+                      (ele != 'tour_kategori') ? $('#tour_kategori').addClass('is-valid') : null;
+                      (ele != 'tour_fasilitas') ? $('#tour_fasilitas').addClass('is-valid') : null;
+                      (ele != 'tour_jadwal') ? $('#tour_jadwal').addClass('is-valid') : null;
+                      (ele != 'tour_image') ? $('#tour_image').addClass('is-valid') : null;
+                   });
+
+                }
+            },
+             error: function(jqXHR, textStatus, errorThrown) {
+                console.log(textStatus + errorThrown);
+             }
         });
         return false;
-    }
+    });
+    // LABEL IMAGE
+    $('#tour_image').on('change',function(){
+        //get the file name
+        var fileName = $(this).val();
+        //replace the "Choose a file" label
+        $(this).next('.custom-file-label').html(fileName);
+    })
+    // LABEL IMAGE
+    $('#image_destinasi').on('change',function(){
+        //get the file name
+        var fileName = $(this).val();
+        //replace the "Choose a file" label
+        $(this).next('.custom-file-label').html(fileName);
+    })
     // DELETE DESTINASI FUNCTION
     function delete_paket(id){
         $.ajax({
             type : "POST",
-            url  : "<?php echo site_url('admin/paket_tour/delete')?>",
+            url  : "<?php echo base_url('admin/paket_tour/delete')?>",
             dataType : "JSON",
             data : {id:id},
             success: function(data){
@@ -579,7 +654,7 @@ $(document).ready(function(){
     function delete_destinasi(id){
         $.ajax({
             type : "POST",
-            url  : "<?php echo site_url('admin/destinasi/delete')?>",
+            url  : "<?php echo base_url('admin/destinasi/delete')?>",
             dataType : "JSON",
             data : {id:id},
             success: function(data){
@@ -591,7 +666,7 @@ $(document).ready(function(){
     function delete_durasi(id){
         $.ajax({
             type : "POST",
-            url  : "<?php echo site_url('admin/durasi/delete')?>",
+            url  : "<?php echo base_url('admin/durasi/delete')?>",
             dataType : "JSON",
             data : {id:id},
             success: function(data){
@@ -602,7 +677,7 @@ $(document).ready(function(){
     function delete_kategori(id){
         $.ajax({
             type : "POST",
-            url  : "<?php echo site_url('admin/kategori/delete')?>",
+            url  : "<?php echo base_url('admin/kategori/delete')?>",
             dataType : "JSON",
             data : {id:id},
             success: function(data){
@@ -720,6 +795,20 @@ $(document).ready(function(){
           }
         })
     });
+
+    /*CKEDITOR */
+
+    ClassicEditor
+    .create( document.querySelector( '#tour_jadwal' ) )
+    .catch( error => {
+        console.error( error );
+    } );
+
+    ClassicEditor
+    .create( document.querySelector( '#tour_fasilitas' ) )
+    .catch( error => {
+        console.error( error );
+    } );
 
 
 });
